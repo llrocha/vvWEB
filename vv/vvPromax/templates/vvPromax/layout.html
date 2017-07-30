@@ -22,20 +22,21 @@
     <![endif]-->
   </head>
   <body>
-  <!-- NAVIGATOR =================================================================-->
+  <!-- MENU ======================================================================-->
 {% include 'vvPromax/includes/menu.html' %}
   <!--============================================================================-->
     <div class="starter-template">
-    {% block content %}{% endblock %}
-    <hr>
-    <foot>
-    {% include 'vvPromax/includes/foot.html' %}
-    </foot>
+{% block content %}{% endblock %}
+    <hr>    
+{% include 'vvPromax/includes/foot.html' %}
     </div>
+
+    <!-- SCRIPTS ===================================================================-->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="{% static 'Servers/js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'vvPromax/js/jquery-3.1.1.min.js' %}"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="{% static 'Servers/js/bootstrap.min.js' %}"></script>
-    {% block script %}{% endblock %}
+    <script src="{% static 'vvPromax/js/bootstrap.min.js' %}"></script>
+{% block script %}{% endblock %}
+    <!--============================================================================-->
 </body>
 </html>
