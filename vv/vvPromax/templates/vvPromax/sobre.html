@@ -1,4 +1,10 @@
 {% extends "vvPromax/layout.html" %}
 {% block content %}
 <h1>Sobre!</h1>
+PATH={{ request.path }}<br>
+GET_FULL_PATH={{ request.get_full_path }}<br>
+META=<br>
+{% for k, v in request.META.items %}
+{{ k }}={{ v }}<br>
+{% endfor %}
 {% endblock %}

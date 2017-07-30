@@ -19,6 +19,7 @@ import vvPromax.views
 
 urlpatterns = [
     url(r'^$', vvPromax.views.home, name='home'),
+    url(r'^listar/$', vvPromax.views.listar, name='listar'),
     url(r'^verificar/$', vvPromax.views.verificar, name='verificar'),
     url(r'^comparar$', vvPromax.views.comparar, name='comparar'),
     url(r'^contato$', vvPromax.views.contato, name='contato'),

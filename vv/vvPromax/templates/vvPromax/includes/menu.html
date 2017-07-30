@@ -11,15 +11,20 @@
       </div>
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
+          {% ifequal menu 'listar' %}
+            <li class="active"><a href="/listar">Listar</a></li>
+          {% else %}
+            <li><a href="/listar">Listar</a></li>
+          {% endifequal %}
           {% ifequal menu 'comparar' %}
             <li class="active"><a href="/comparar">Comparar</a></li>
           {% else %}
             <li><a href="/comparar">Comparar</a></li>
           {% endifequal %}
           {% ifequal menu 'verificar' %}
-            <li class="active"><a href="/verificar">Verifica existência</a></li>
+            <li class="active"><a href="/verificar">Verificar</a></li>
           {% else %}
-            <li><a href="/verificar">Verifica existência</a></li>
+            <li><a href="/verificar">Verificar</a></li>
           {% endifequal %}
           {% ifequal menu 'contato' %}
             <li class="active"><a href="/contato">Contato</a></li>

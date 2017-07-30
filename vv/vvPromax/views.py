@@ -5,6 +5,12 @@ from django.http import HttpRequest, HttpResponse
 from datetime import datetime
 from vv import settings
 
+def valid_v(k, d):
+    if(k in d):
+        if(len(d[k])):
+            return 'RECEBIDO!'
+    return ''
+
 def home(request):
     """Renders the home page."""
     assert isinstance(request, HttpRequest)
@@ -19,17 +25,23 @@ def home(request):
         }
     )
 
-def comparar(request):
-    """Renders the comparar page."""
+def listar(request):
+    """Renders the verificar page."""
     assert isinstance(request, HttpRequest)
+    
+    f = valid_v('f', request.GET)
+    d = valid_v('d', request.GET)
+
     return render(
         request,
-        'vvPromax/comparar.html',
+        'vvPromax/listar.html',
         {
-            'menu':'comparar',
+            'menu':'listar',
             'appname':'vvPromax',
-            'title':'Home Page',
+            'title':'Listar arquivos',
             'year':datetime.now().year,
+            'd': d,
+            'f': f,
         }
     )
 
@@ -42,7 +54,21 @@ def verificar(request):
         {
             'menu':'verificar',
             'appname':'vvPromax',
-            'title':'Home Page',
+            'title':'Verificar existência',
+            'year':datetime.now().year,
+        }
+    )
+
+def comparar(request):
+    """Renders the comparar page."""
+    assert isinstance(request, HttpRequest)
+    return render(
+        request,
+        'vvPromax/comparar.html',
+        {
+            'menu':'comparar',
+            'appname':'vvPromax',
+            'title':'Comparar pastas/arquivos',
             'year':datetime.now().year,
         }
     )
@@ -56,7 +82,7 @@ def contato(request):
         {
             'menu':'contato',
             'appname':'vvPromax',
-            'title':'Home Page',
+            'title':'Contato',
             'year':datetime.now().year,
         }
     )
@@ -70,8 +96,8 @@ def sobre(request):
         {
             'menu':'sobre',
             'appname':'vvPromax',
-            'title':'Home Page',
+            'title':'Sobre',
             'year':datetime.now().year,
-            'request':request.readlines()
+            'request':request,
         }
     )

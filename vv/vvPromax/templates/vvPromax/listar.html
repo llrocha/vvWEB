@@ -1,0 +1,9 @@
+{% extends "vvPromax/layout.html" %}
+{% block content %}
+<h1>Listar!</h1>
+<form action="/listar/" method="get">
+    Diretório: <input type="text" name="d" value="{{ d }}"><br>
+    Máscara:<input type="text" name="f" value="{{ f }}"><br>
+    <input type="submit" name="Listar" value="Listar">
+</form>
+{% endblock %}
