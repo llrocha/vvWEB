@@ -35,6 +35,7 @@ def comparar(request):
 
 def verificar(request):
     """Renders the verificar page."""
+    assert isinstance(request, HttpRequest)
     return render(
         request,
         'vvPromax/verificar.html',
@@ -48,6 +49,7 @@ def verificar(request):
 
 def contato(request):
     """Renders the contato page."""
+    assert isinstance(request, HttpRequest)
     return render(
         request,
         'vvPromax/contato.html',
@@ -61,6 +63,7 @@ def contato(request):
 
 def sobre(request):
     """Renders the sobre page."""
+    assert isinstance(request, HttpRequest)
     return render(
         request,
         'vvPromax/sobre.html',
@@ -69,5 +72,6 @@ def sobre(request):
             'appname':'vvPromax',
             'title':'Home Page',
             'year':datetime.now().year,
+            'request':request.readlines()
         }
     )
