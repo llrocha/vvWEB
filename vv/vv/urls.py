@@ -23,6 +23,6 @@ urlpatterns = [
     url(r'^verificar/$', vvPromax.views.verificar, name='verificar'),
     url(r'^comparar$', vvPromax.views.comparar, name='comparar'),
     url(r'^contato$', vvPromax.views.contato, name='contato'),
-    url(r'^sobre$', vvPromax.views.sobre, name='sobre'),
+    url(r'^sobre/', vvPromax.views.sobre, name='sobre'),
     url(r'^admin/', admin.site.urls),
 ]

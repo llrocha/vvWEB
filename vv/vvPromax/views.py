@@ -1,15 +1,17 @@
 from django.shortcuts import render
 
 # Create your views here.
+import urllib
 from django.http import HttpRequest, HttpResponse
 from datetime import datetime
 from vv import settings
+from verifica_versao import GEO_IP, VersionVerify
 
-def valid_v(k, d):
+def valid_v(k, d, default = ''):
     if(k in d):
         if(len(d[k])):
-            return 'RECEBIDO!'
-    return ''
+            return urllib.parse.unquote(d[k])
+    return default
 
 def home(request):
     """Renders the home page."""
@@ -29,20 +31,40 @@ def listar(request):
     """Renders the verificar page."""
     assert isinstance(request, HttpRequest)
     
-    f = valid_v('f', request.GET)
-    d = valid_v('d', request.GET)
+    l = valid_v('Listar', request.GET, '')
+    f = valid_v('f', request.GET, '*.gnt')
+    d = valid_v('d', request.GET, '.')
+    g = valid_v('geo', request.GET, '')
 
-    return render(
-        request,
-        'vvPromax/listar.html',
-        {
+    if(l and g):
+        vv = VersionVerify()
+        vv.loadfilesfromgeo(g, d, f)
+        context = {
+            'menu': 'listar',
+            'appname': 'vvPromax',
+            'title': 'Listar arquivos',
+            'year': datetime.now().year,
+            'd': d,
+            'f': f,
+            'listar': True,
+            'files': vv.filesfromgeo(g),
+            'geo': g
+        }
+    else:
+        context = {
             'menu':'listar',
             'appname':'vvPromax',
             'title':'Listar arquivos',
             'year':datetime.now().year,
             'd': d,
             'f': f,
+            'geos': GEO_IP.keys()
         }
+
+    return render(
+        request,
+        'vvPromax/listar.html',
+        context
     )
 
 def verificar(request):

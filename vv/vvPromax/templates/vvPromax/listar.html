@@ -1,9 +1,73 @@
 {% extends "vvPromax/layout.html" %}
 {% block content %}
-<h1>Listar!</h1>
-<form action="/listar/" method="get">
-    Diretório: <input type="text" name="d" value="{{ d }}"><br>
-    Máscara:<input type="text" name="f" value="{{ f }}"><br>
-    <input type="submit" name="Listar" value="Listar">
+<br>
+{% if listar %}
+<h1>Geografia {{ geo|upper }}</h1>
+<h3>Filtro: {{ d }}/{{ f }}</h3>
+<hr>
+<div class="table-responsive">
+<table class="table table-striped table-condensed" style='font-family: consolas'>
+    <colgroup>
+        <col class="file">
+        <col class="md5">
+        <col class="ver">
+        <col class="attr">
+    </colgroup>
+    <thead>
+        <tr>
+            <th scope="col">arquivo</th>
+            <th scope="col">md5sum</th>
+            <th scope="col">versão</th>
+            <th scope="col">atributos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for file in files %}
+        <tr>
+            <td>
+                {{ file.1 }}
+            </td>
+            <td>
+                {{ file.3 }}
+            </td>
+            <td>
+                {{ file.2 }}
+            </td>
+            <td>
+                {{ file.4 }}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<form action="/listar/" method="get" role="form">
+    <fieldset>
+        <legend>Listar arquivos</legend>
+        <div class="row">
+        <div class="form-group col-sm-2">
+            <label class="control-label" for="geo">Geografia:</label>
+            <select id="geo" name="geo" class="form-control">
+                <option></option>
+                {% for geo in geos %}
+                <option>{{ geo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group col-sm-5">
+            <label class="control-label" for="dir">Diretório:</label>
+            <input id="dir" type="text" name="d" value="{{ d }}" class="form-control"><br>
+        </div>
+        <div class="form-group col-sm-5">
+            <label class="control-label" for="mask">Máscara:</label>
+            <input id="mask" type="text" name="f" value="{{ f }}" class="form-control"><br>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="Listar" value="Listar" class="btn btn-success">
+        </div>
+        </div>
+    </fieldset>
 </form>
+{% endif %}
 {% endblock %}

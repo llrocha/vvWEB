@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import os
-#import promax => UNIX only
+import logging
 import urllib.request
 
 """
@@ -10,7 +10,7 @@ PARAM 1 = OPERATION f or d
 PARAM 2 = DIRECTORY
 PARAM 3 = MASK
 """
-URL = 'http://{0}/cgi-bin/verifica_versao.exe?{1}={2}/{3}'
+URL = 'http://{0}/cgi-bin/verifica_versao.exe?f={1}/{2}'
 
 GEOS = (
     'ac', 'ba', 'co', 'mg', 'no', 'pr', 'rj', 'sp', 'su',
@@ -90,6 +90,11 @@ SERVER_IP = {
     }
 }
 
+def verifica_versao_url(geo, d, f):
+    if(geo in GEO_IP.keys()):
+        return URL.format(GEO_IP[geo], d, f)
+    else:
+        return None
 
 class VersionVerifyFileException(Exception):
     """Raise VerifyFileException Exception"""
@@ -133,25 +138,21 @@ class VersionVerify:
         self.files = []
         self.response = {}
         self.file_array = []
+        logger.debug('Criando objeto VersionVerify()')
 
-    def loadfilesfromserver(self, host, dir = '/amb/eventbin', mask = '*'):
+
+    def loadfilesfromgeo(self, geo, dir = '/amb/eventbin', mask = '*'):
         """
-        loadfilesfromserver(host, dir, mask)
+        loadfilesfromserver(geo, dir, mask)
         Carrega arquivos do HOST diretório com máscara especificada para verificação.
         """
 
-        URL = 'http://{0}/cgi-bin/verifica_versao.exe?{1}={2}/{3}'
-        
         url = ''
-        if(host in SERVER_GEO.keys()):
-            for geo in SERVER_GEO[host]:
-                url = URL.format(GEO_IP[geo], geo, mask)
-        elif(host[:5].upper() == 'ACPRX'):
-                self.geo = host[-2:].lower()
+        if(geo in GEO_IP.keys()):
+            url = verifica_versao_url(geo, dir, mask)
+            logger.debug('URL: {0}'.format(url))
         else:
             raise VersionVerifyException('Host inválido!')
-
-        print(url)
 
         if(geo not in self.response.keys() or not self.response[geo]):
             try:
@@ -170,8 +171,9 @@ class VersionVerify:
         filesfromgeo(geo) = retorna lista de arquivos de uma geo
         """
         r = []
-        for l in self.response[geo]:
-            r.append(l)
+        for k in self.response[geo]:
+            v = self.response[geo][k]
+            r.append([v.servidor,v.name,v.version,v.md5sum,v.raw_info])
         return r
 
     def comparegeofiles(self, *args):
@@ -239,3 +241,14 @@ class VersionVerify:
             for geo in self.response.keys():
                 r[f][geo] = self.response[geo][f].md5sum
         return r
+
+#LOG CONFIG
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
+#create file handler
+handler = logging.FileHandler('{0}.log'.format(__name__))
+handler.setLevel(logging.ERROR)
+# create formatter
+formatter = logging.Formatter('[%(asctime)s] - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
