@@ -1,11 +1,12 @@
 {% extends "vvPromax/layout.html" %}
 {% block content %}
-<br>
 {% if listar %}
-<h1>Geografia {{ geo|upper }}</h1>
-<h3>Filtro: {{ d }}/{{ f }}</h3>
-<hr>
-<div class="table-responsive">
+<div class="col-sm-12">
+    <h1>Geografia {{ geo|upper }}</h1>
+    <div style='font-family: consolas;font-weight: bold;'>Filtro: {{ d }}/{{ f }}</div>
+</div>
+
+<div class="table-responsive col-sm-12">
 <table class="table table-striped table-condensed" style='font-family: consolas'>
     <colgroup>
         <col class="file">
@@ -18,29 +19,32 @@
             <th scope="col">arquivo</th>
             <th scope="col">md5sum</th>
             <th scope="col">versão</th>
-            <th scope="col">atributos</th>
         </tr>
     </thead>
     <tbody>
         {% for file in files %}
         <tr>
-            <td>
+            <td class="col-md-6 col-md-offset-6" data-original-title="{{ file.4 }}" data-placement="top" data-toggle="tooltip">
                 {{ file.1 }}
             </td>
-            <td>
+            <td class="col-md-3">
                 {{ file.3 }}
             </td>
-            <td>
+            <td class="col-md-3">
                 {{ file.2 }}
-            </td>
-            <td>
-                {{ file.4 }}
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 </div>
+<!--
+<form action="/listar/" method="get" role="form">
+    <div class="col-sm-12">
+        <input type="submit" name="Baixar" value="Baixar" class="btn btn-success">
+    </div>
+</form>
+-->
 {% else %}
 <form action="/listar/" method="get" role="form">
     <fieldset>
@@ -70,4 +74,10 @@
     </fieldset>
 </form>
 {% endif %}
+{% endblock %}
+{% block script %}
+<script id="bsJs" type="text/javascript">
+    //$(function () { $("[data-toggle='tooltip']").tooltip(); });
+    //$('[data-toggle="tooltip"]').popover({trigger: 'hover','placement': 'top'});
+</script>
 {% endblock %}
