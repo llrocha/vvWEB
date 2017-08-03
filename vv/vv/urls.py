@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^comparar$', vvPromax.views.comparar, name='comparar'),
     url(r'^contato$', vvPromax.views.contato, name='contato'),
     url(r'^sobre/', vvPromax.views.sobre, name='sobre'),
+    url(r'^teste/', vvPromax.views.teste, name='teste'),
     url(r'^admin/', admin.site.urls),
 ]

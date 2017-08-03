@@ -123,3 +123,20 @@ def sobre(request):
             'request':request,
         }
     )
+
+def teste(request):
+    """Renders the sobre page."""
+    assert isinstance(request, HttpRequest)
+    return render(
+        request,
+        'vvPromax/teste.html',
+        {
+            'menu':'sobre',
+            'appname':'vvPromax',
+            'title':'Sobre',
+            'year':datetime.now().year,
+            'request':request,
+        }
+    )
+
+    

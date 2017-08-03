@@ -1,9 +1,17 @@
 {% extends "vvPromax/layout.html" %}
 {% block content %}
 {% if listar %}
-<div class="col-sm-12">
+<div class="page-header">
     <h1>Geografia {{ geo|upper }}</h1>
+</div>
+
+<div class="col-sm-11">
     <div style='font-family: consolas;font-weight: bold;'>Filtro: {{ d }}/{{ f }}</div>
+</div>
+<div class="col-sm-1">
+    <form action="/listar/" method="get" role="form">
+        <input type="submit" name="Baixar" value="Baixar" class="btn btn-success">
+    </form>
 </div>
 
 <div class="table-responsive col-sm-12">
@@ -39,11 +47,7 @@
 </table>
 </div>
 <!--
-<form action="/listar/" method="get" role="form">
-    <div class="col-sm-12">
-        <input type="submit" name="Baixar" value="Baixar" class="btn btn-success">
-    </div>
-</form>
+
 -->
 {% else %}
 <form action="/listar/" method="get" role="form">
