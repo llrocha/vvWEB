@@ -1,6 +1,108 @@
 {% extends "vvPromax/layout.html" %}
 {% block content %}
+{% if comparar %}
 <div class="page-header">
-<h1>Comparar!</h1>
+    <h1>Geografia 
+        {% for geo in geos %}
+        {{ geo|upper }}, 
+        {% endfor %}
+    </h1>
 </div>
+
+<div class="col-sm-11">
+    <div style='font-family: consolas;font-weight: bold;'>Filtro: {{ d }}/{{ f }}</div>
+</div>
+<div class="col-sm-1">
+    <form action="/comparar/" method="get" role="form">
+        <input type="submit" name="Baixar" value="Baixar" class="btn btn-success">
+    </form>
+</div>
+
+<div class="table-responsive col-sm-12">
+<table class="table table-striped table-condensed" style='font-family: consolas'>
+    <colgroup>
+        <col class="file">
+        {% for geo in geos %}
+        <col class="geo{{ geo }}">
+        {% endfor %}        
+    </colgroup>
+    <thead>
+        <tr>
+            <th scope="col">arquivo</th>
+            <th scope="col">
+            {% for geo in geos %}
+            {{ geo }}
+            {% endfor %}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for file in files.items %}
+
+        {% if file.1 %}
+        <tr>
+            <td class="col-md-9 col-md-offset-9" data-original-title="{{ file.4 }}" data-placement="top" data-toggle="tooltip">
+                {{ file.0 }}
+            </td>
+            <td class="col-md-3 col-md-offset-3">
+                <div class="bs-glyphicons">
+            
+                    <span class="glyphicon glyphicon-ok" aria-hidden="false"></span>
+                </div>
+            </td>
+        </tr>
+        {% else %}
+        <tr class="danger">
+            <td class="col-md-9 col-md-offset-9" data-original-title="{{ file.4 }}" data-placement="top" data-toggle="tooltip">
+                {{ file.0 }}
+            </td>
+            <td class="col-md-3 col-md-offset-3">
+                <div class="bs-glyphicons">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="false"></span>
+                </div>
+            </td>
+        </tr>
+        {% endif %}
+        
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<!-- -->
+{% else %}
+<!-- -->
+<form action="/comparar/" method="get" role="form">
+    <fieldset>
+        <legend>Comparar arquivos entre Geografias</legend>
+        <div class="form-group col-sm-12">
+        <label class="control-label" for="geo">Geografia:</label>
+        <div class="checkbox">
+            {% for geo in geos %}
+            <label class="checkbox-inline">
+                <input type="checkbox" name="{{ geo }}" />
+                {{ geo }}
+            </label>
+            {% endfor %}
+        </div>
+        </div>
+        <div class="form-group col-sm-6">
+            <label class="control-label" for="dir">Diretório:</label>
+            <input id="dir" type="text" name="d" value="{{ d }}" class="form-control"><br>
+        </div>
+        <div class="form-group col-sm-6">
+            <label class="control-label" for="mask">Máscara:</label>
+            <input id="mask" type="text" name="f" value="{{ f }}" class="form-control"><br>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="Comparar" value="Comparar" class="btn btn-success">
+        </div>
+    </fieldset>
+</form>
+{% endif %}
+{% endblock %}
+{% block script %}
+<script id="bsJs" type="text/javascript">
+    //$(function () { $("[data-toggle='tooltip']").tooltip(); });
+    //$('[data-toggle="tooltip"]').popover({trigger: 'hover','placement': 'top'});
+</script>
 {% endblock %}

@@ -3,6 +3,9 @@
 import os
 import logging
 import urllib.request
+import threading
+import subprocess
+import time
 
 """
 PARAM 0 = IP ou HOST
@@ -96,6 +99,11 @@ def verifica_versao_url(geo, d, f):
     else:
         return None
 
+def valid_v(k, d, default = ''):
+    if(k in d):
+        return d[k]
+    return default
+
 class VersionVerifyFileException(Exception):
     """Raise VerifyFileException Exception"""
 
@@ -129,6 +137,7 @@ class VersionVerifyFile:
             self.name
         )
 
+
 class VersionVerify:
     """
     Classe para executar query de validação de distribuição dos Promax
@@ -141,7 +150,7 @@ class VersionVerify:
         logger.debug('Criando objeto VersionVerify()')
 
 
-    def loadfilesfromgeo(self, geo, dir = '/amb/eventbin', mask = '*'):
+    def loadfilesfromgeo(self, geo, dir = '.', mask = '*.exe'):
         """
         loadfilesfromserver(geo, dir, mask)
         Carrega arquivos do HOST diretório com máscara especificada para verificação.
@@ -239,8 +248,79 @@ class VersionVerify:
             if(f not in r.keys()):
                 r[f] = {}
             for geo in self.response.keys():
-                r[f][geo] = self.response[geo][f].md5sum
+                file = valid_v(f, self.response[geo])
+                if(file):
+                    r[f][geo] = self.response[geo][f].md5sum
+                else:
+                    r[f][geo] = ''
         return r
+
+
+class LoadFilesFromGeo(threading.Thread):
+    def __init__(self, **kwargs):
+        threading.Thread.__init__(self)
+
+        self.vv = kwargs['vv']
+        self.geo = kwargs['geo']
+        self.pool = kwargs['pool']
+        self.dir = kwargs['dir']
+        self.mask = kwargs['mask']
+
+    def run(self):
+        self.vv.loadfilesfromgeo(self.geo, self.dir, self.mask)
+        self.pool.release()
+
+class LoadGeos(threading.Thread):
+    def __init__(self, **kwargs):
+        threading.Thread.__init__(self)
+
+        self.jobs = []
+        self.vv = VersionVerify()
+        self.geos = kwargs['geos']
+        self.pool = kwargs['pool']
+
+        if('dir' in kwargs.keys()):
+            self.dir = kwargs['dir']
+        else:
+            self.dir = '.'
+        if('mask' in kwargs.keys()):
+            self.mask = kwargs['mask']
+        else:
+            self.mask = '*.exe'
+          
+    def run(self):
+        for geo in self.geos:
+            self.pool.acquire()
+            kwargs = {
+                'vv': self.vv, 
+                'pool': self.pool, 
+                'geo': geo, 
+                'dir': self.dir, 
+                'mask': self.mask
+            }
+            job = LoadFilesFromGeo(**kwargs)
+            job.setDaemon(True)
+            job.start()
+            self.jobs.append(job)
+
+        for job in self.jobs:
+            job.join()
+
+class GeoLoader():
+    def __init__(self, *args, **kwargs):
+        if('geos' in kwargs.keys()):
+            self.thread_count = len(kwargs['geos'])
+        else:
+            raise VersionVerifyException('Erro não foram passadas as GEO\'s')
+
+        self.pool = threading.BoundedSemaphore(value = self.thread_count)
+        self.loader = LoadGeos(pool=self.pool, **kwargs)
+
+    def load(self):
+        self.loader.start()
+        self.loader.join()
+
+
 
 #LOG CONFIG
 logger = logging.getLogger(__name__)

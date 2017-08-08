@@ -5,7 +5,7 @@ import urllib
 from django.http import HttpRequest, HttpResponse
 from datetime import datetime
 from vv import settings
-from verifica_versao import GEO_IP, VersionVerify
+from verifica_versao import GEO_IP, VersionVerify, GeoLoader
 
 def valid_v(k, d, default = ''):
     if(k in d):
@@ -32,7 +32,7 @@ def listar(request):
     assert isinstance(request, HttpRequest)
     
     l = valid_v('Listar', request.GET, '')
-    f = valid_v('f', request.GET, '*.gnt')
+    f = valid_v('f', request.GET, '*.exe')
     d = valid_v('d', request.GET, '.')
     g = valid_v('geo', request.GET, '')
 
@@ -70,29 +70,91 @@ def listar(request):
 def verificar(request):
     """Renders the verificar page."""
     assert isinstance(request, HttpRequest)
+    l = valid_v('Verificar', request.GET, '')
+    f = valid_v('f', request.GET, '*.exe')
+    d = valid_v('d', request.GET, '.')
+
+    if(l):
+        geos = []
+        for geo in GEO_IP.keys():
+            g = valid_v(geo, request.GET, '')
+            if(g):
+                geos.append(geo)
+                
+        gl = GeoLoader(geos=geos)
+        gl.load()
+        
+        context = {
+                'menu':'verificar',
+                'appname':'vvPromax',
+                'title':'Verificar existência',
+                'year':datetime.now().year,
+                'd': d,
+                'f': f,
+                'verificar': True,
+                'files': gl.loader.vv.existgeofiles(*geos),
+                'geos': geos
+            }        
+    else:
+        context = {
+                'menu':'verificar',
+                'appname':'vvPromax',
+                'title':'Verificar existência',
+                'year':datetime.now().year,
+                'd': d,
+                'f': f,
+                'geos': GEO_IP.keys()
+            }        
+
     return render(
         request,
         'vvPromax/verificar.html',
-        {
-            'menu':'verificar',
-            'appname':'vvPromax',
-            'title':'Verificar existência',
-            'year':datetime.now().year,
-        }
+        context
     )
 
 def comparar(request):
     """Renders the comparar page."""
     assert isinstance(request, HttpRequest)
+
+    l = valid_v('Comparar', request.GET, '')
+    f = valid_v('f', request.GET, '*.exe')
+    d = valid_v('d', request.GET, '.')
+
+    if(l):
+        geos = []
+        vv = VersionVerify()
+        for geo in GEO_IP.keys():
+            g = valid_v(geo, request.GET, '')
+            if(g):
+                geos.append(geo)
+                vv.loadfilesfromgeo(geo, d, f)
+
+        context = {
+            'menu': 'comparar',
+            'appname': 'vvPromax',
+            'title': 'Comparar pastas/arquivos',
+            'year': datetime.now().year,
+            'd': d,
+            'f': f,
+            'comparar': True,
+            'files': vv.comparegeofiles(*geos),
+            'geos': geos
+        }
+    else:
+        context = {
+                'menu':'comparar',
+                'appname':'vvPromax',
+                'title':'Comparar pastas/arquivos',
+                'year':datetime.now().year,
+                'd': d,
+                'f': f,
+                'geos': GEO_IP.keys()
+            }
+
     return render(
         request,
         'vvPromax/comparar.html',
-        {
-            'menu':'comparar',
-            'appname':'vvPromax',
-            'title':'Comparar pastas/arquivos',
-            'year':datetime.now().year,
-        }
+        context
     )
 
 def contato(request):
